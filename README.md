@@ -24,5 +24,5 @@ dependencies {
 Data generation is done using fabric registries simply call DataRegistries#register to register your data builder (or simply register using Registry#register).
 
 Before running the game to generate the data, you need to set some environment variables to tell FDG (Fabric Data Generation) to generate your data.
-Those environment variables are generateData (boolean, if FDG should generate data), and resourcePath (string, the path to output the generated data, typically the src/main/resources directory. should be the full path).
+Those environment variables are "generateData" (boolean, if FDG should generate data), "resourcePath" (string, the path to output the generated data, typically the src/main/resources directory. should be the full path), and "enabledMods" (string array, items separated by a comma, what mods to generate data for).
 </details>

@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
-public class DirManager {
+public final class DirManager {
     public static void deleteDir(File dir) {
         try {
             FileUtils.deleteDirectory(dir);

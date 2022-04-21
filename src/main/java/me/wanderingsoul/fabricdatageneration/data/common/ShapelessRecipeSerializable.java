@@ -1,5 +1,6 @@
 package me.wanderingsoul.fabricdatageneration.data.common;
 
+import me.wanderingsoul.fabricdatageneration.EnvVariables;
 import me.wanderingsoul.fabricdatageneration.FabricDataGeneration;
 import me.wanderingsoul.fabricdatageneration.data.IBuilder;
 import me.wanderingsoul.fabricdatageneration.data.ISerializable;
@@ -114,7 +115,7 @@ public class ShapelessRecipeSerializable implements ISerializable {
         @Override
         public void save() {
             try {
-                String path = FabricDataGeneration.getResourcePath()+"/data/"+getId().getNamespace()+"/recipes/";
+                String path = EnvVariables.RESOURCE_PATH+"/data/"+getId().getNamespace()+"/recipes/";
                 File pathFile = new File(path);
                 pathFile.mkdirs();
                 File json = new File(path+getId().getPath()+".json");
