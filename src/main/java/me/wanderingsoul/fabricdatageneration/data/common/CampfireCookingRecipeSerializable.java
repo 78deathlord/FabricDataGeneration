@@ -13,25 +13,32 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class SmeltingRecipeSerializable implements ISerializable {
-    private RecipeType recipeType = RecipeType.SMELTING;
+public class CampfireCookingRecipeSerializable implements ISerializable {
     private Pair<IngredientType, Identifier> ingredient;
     private Identifier result;
-    private float xp;
+    private double experience;
     private int cookingTime = 200;
 
     @Override
     public String serialize() {
-        StringBuilder builder = new StringBuilder();
+        String str =
+                """
+                {
+                    "type": "minecraft:campfire_cooking",
+                    "ingredient": {
+                        "%1$s": "%2$s"
+                    },
+                    "result": "%3$s",
+                    "experience": %4$s,
+                    "cookingtime": %5$s
+                }
+                """;
 
-        builder.append("{\n\t\"type\": ").append(recipeType.toString()).append(",\n\t");
-        if (ingredient.getLeft() == IngredientType.ITEM) builder.append("\"ingredient\": {\n\t\t\"item\": \"").append(ingredient.getRight().toString()).append("\"\n\t},\n\t");;
-        if (ingredient.getLeft() == IngredientType.TAG) builder.append("\"ingredient\": {\n\t\t\"tag\": \"").append(ingredient.getRight().toString()).append("\"\n\t},\n\t");
-        builder.append("\"result\": \"").append(result.toString()).append("\",\n\t");
-        builder.append("\"experience\": ").append(xp).append(",\n\t");
-        builder.append("\"cookingtime\": ").append(cookingTime).append("\n}");
-
-        return builder.toString();
+        if (ingredient.getLeft().equals(IngredientType.ITEM)) {
+            return String.format(str, IngredientType.ITEM, ingredient.getLeft().toString(), result.toString(), experience, cookingTime);
+        } else {
+            return String.format(str, IngredientType.TAG, ingredient.getLeft().toString(), result.toString(), experience, cookingTime);
+        }
     }
 
     public Pair<IngredientType, Identifier> getIngredient() {
@@ -42,45 +49,20 @@ public class SmeltingRecipeSerializable implements ISerializable {
         return result;
     }
 
-    public float getXp() {
-        return xp;
+    public double getExperience() {
+        return experience;
     }
 
     public int getCookingTime() {
         return cookingTime;
     }
 
-    public static enum RecipeType {
-        SMELTING, BLASTING, SMOKING;
-
-        @Override
-        public String toString() {
-            if (this == SMOKING) return "\"minecraft:smoking\"";
-            if (this == BLASTING) return "\"minecraft:blasting\"";
-            if (this == SMELTING) return "\"minecraft:smelting\"";
-
-            return super.toString();
-        }
-    }
-
-    public static class Builder implements IBuilder<SmeltingRecipeSerializable> {
-        private final SmeltingRecipeSerializable serializable = new SmeltingRecipeSerializable();
+    public static class Builder implements IBuilder<CampfireCookingRecipeSerializable> {
+        private final CampfireCookingRecipeSerializable serializable = new CampfireCookingRecipeSerializable();
         private final Identifier id;
 
         public Builder(Identifier id) {
             this.id = id;
-        }
-
-        public Builder recipeType(RecipeType recipeType) {
-            serializable.recipeType = recipeType;
-
-            return this;
-        }
-
-        public Builder ingredient(IngredientType type, Identifier identifier) {
-            serializable.ingredient = new Pair<>(type, identifier);
-
-            return this;
         }
 
         public Builder ingredient(Item ingredient) {
@@ -95,20 +77,26 @@ public class SmeltingRecipeSerializable implements ISerializable {
             return this;
         }
 
+        public Builder ingredient(IngredientType type, Identifier ingredient) {
+            serializable.ingredient = new Pair<>(type, ingredient);
+
+            return this;
+        }
+
+        public Builder result(Item result) {
+            serializable.result = Registry.ITEM.getId(result);
+
+            return this;
+        }
+
         public Builder result(Identifier result) {
             serializable.result = result;
 
             return this;
         }
 
-        public Builder result(Item item) {
-            serializable.result = Registry.ITEM.getId(item);
-
-            return this;
-        }
-
-        public Builder xp(float xp) {
-            serializable.xp = xp;
+        public Builder experience(double experience) {
+            serializable.experience = experience;
 
             return this;
         }
@@ -151,7 +139,7 @@ public class SmeltingRecipeSerializable implements ISerializable {
         }
 
         @Override
-        public SmeltingRecipeSerializable getUnderlyingValue() {
+        public CampfireCookingRecipeSerializable getUnderlyingValue() {
             return serializable;
         }
     }

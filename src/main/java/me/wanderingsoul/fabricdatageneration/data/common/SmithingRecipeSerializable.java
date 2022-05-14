@@ -1,7 +1,6 @@
 package me.wanderingsoul.fabricdatageneration.data.common;
 
 import me.wanderingsoul.fabricdatageneration.EnvVariables;
-import me.wanderingsoul.fabricdatageneration.FabricDataGeneration;
 import me.wanderingsoul.fabricdatageneration.data.IBuilder;
 import me.wanderingsoul.fabricdatageneration.data.ISerializable;
 import net.minecraft.item.Item;
@@ -126,6 +125,12 @@ public class SmithingRecipeSerializable implements ISerializable {
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
+        }
+
+        @Override
+        public String getSavePath() {
+            String path = EnvVariables.RESOURCE_PATH+"/data/"+getId().getNamespace()+"/recipes/";
+            return path+getId().getPath()+".json";
         }
 
         @Override

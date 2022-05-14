@@ -141,6 +141,12 @@ public class ShapedRecipeSerializable implements ISerializable {
         }
 
         @Override
+        public String getSavePath() {
+            String path = EnvVariables.RESOURCE_PATH+"/data/"+getId().getNamespace()+"/recipes/";
+            return path+getId().getPath()+".json";
+        }
+
+        @Override
         public Identifier getId() {
             return id;
         }

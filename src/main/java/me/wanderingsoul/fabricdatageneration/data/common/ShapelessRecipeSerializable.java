@@ -1,7 +1,6 @@
 package me.wanderingsoul.fabricdatageneration.data.common;
 
 import me.wanderingsoul.fabricdatageneration.EnvVariables;
-import me.wanderingsoul.fabricdatageneration.FabricDataGeneration;
 import me.wanderingsoul.fabricdatageneration.data.IBuilder;
 import me.wanderingsoul.fabricdatageneration.data.ISerializable;
 import net.minecraft.item.Item;
@@ -18,7 +17,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ShapelessRecipeSerializable implements ISerializable {
-    private String group;
     private final List<Pair<IngredientType, Identifier>> ingredients = new LinkedList<>();
     private Identifier result;
     private int count = 1;
@@ -27,7 +25,7 @@ public class ShapelessRecipeSerializable implements ISerializable {
     public String serialize() {
         StringBuilder builder = new StringBuilder();
 
-        builder.append("{\n\t\"type\": \"minecraft:crafting_shapeless\",\n\t\"group\": \"").append(group).append("\",\n\t");
+        builder.append("{\n\t\"type\": \"minecraft:crafting_shapeless\",\n\t");
 
         builder.append("\"ingredients\": [\n\t\t{\n\t\t\t");
         ingredients.forEach(ingredient -> {
@@ -41,13 +39,7 @@ public class ShapelessRecipeSerializable implements ISerializable {
 
         builder.append("\"result\": {\n\t\t\"item\": \"").append(result.toString()).append("\",\n\t\t\"count\": ").append(count).append("\n\t}\n}");
 
-        LogManager.getLogger().info(builder.toString());
-
         return builder.toString();
-    }
-
-    public String getGroup() {
-        return group;
     }
 
     public List<Pair<IngredientType, Identifier>> getIngredients() {
@@ -68,12 +60,6 @@ public class ShapelessRecipeSerializable implements ISerializable {
 
         public Builder(Identifier id) {
             this.id = id;
-        }
-
-        public Builder group(String group) {
-            serializable.group = group;
-
-            return this;
         }
 
         public Builder ingredient(IngredientType type, Identifier ingredient) {
@@ -130,6 +116,12 @@ public class ShapelessRecipeSerializable implements ISerializable {
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
+        }
+
+        @Override
+        public String getSavePath() {
+            String path = EnvVariables.RESOURCE_PATH+"/data/"+getId().getNamespace()+"/recipes/";
+            return path+getId().getPath()+".json";
         }
 
         @Override
