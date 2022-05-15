@@ -3,6 +3,8 @@ package me.wanderingsoul.fabricdatageneration.data.common;
 import me.wanderingsoul.fabricdatageneration.EnvVariables;
 import me.wanderingsoul.fabricdatageneration.data.IBuilder;
 import me.wanderingsoul.fabricdatageneration.data.ISerializable;
+import me.wanderingsoul.fabricdatageneration.data.json.JsonObject;
+import me.wanderingsoul.fabricdatageneration.data.json.JsonProperty;
 import net.minecraft.item.Item;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
@@ -21,24 +23,19 @@ public class CampfireCookingRecipeSerializable implements ISerializable {
 
     @Override
     public String serialize() {
-        String str =
-                """
-                {
-                    "type": "minecraft:campfire_cooking",
-                    "ingredient": {
-                        "%1$s": "%2$s"
-                    },
-                    "result": "%3$s",
-                    "experience": %4$s,
-                    "cookingtime": %5$s
-                }
-                """;
+        JsonObject obj = new JsonObject();
+        obj.addProperty(new JsonProperty.StringProperty("type", "minecraft:campfire_cooking"));
 
-        if (ingredient.getLeft().equals(IngredientType.ITEM)) {
-            return String.format(str, IngredientType.ITEM, ingredient.getLeft().toString(), result.toString(), experience, cookingTime);
-        } else {
-            return String.format(str, IngredientType.TAG, ingredient.getLeft().toString(), result.toString(), experience, cookingTime);
-        }
+        if (ingredient.getLeft().equals(IngredientType.ITEM))
+            obj.addProperty(new JsonProperty.ObjectProperty("ingredient", new JsonObject().addProperty(new JsonProperty.StringProperty("item", ingredient.getRight().toString()))));
+        else
+            obj.addProperty(new JsonProperty.ObjectProperty("ingredient", new JsonObject().addProperty(new JsonProperty.StringProperty("tag", ingredient.getRight().toString()))));
+
+        obj.addProperty(new JsonProperty.StringProperty("result", result.toString()));
+        obj.addProperty(new JsonProperty.DoubleProperty("experience", experience));
+        obj.addProperty(new JsonProperty.IntProperty("cookingtime", cookingTime));
+
+        return obj.serialize();
     }
 
     public Pair<IngredientType, Identifier> getIngredient() {

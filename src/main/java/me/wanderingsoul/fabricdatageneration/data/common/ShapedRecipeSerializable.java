@@ -4,6 +4,10 @@ import me.wanderingsoul.fabricdatageneration.EnvVariables;
 import me.wanderingsoul.fabricdatageneration.FabricDataGeneration;
 import me.wanderingsoul.fabricdatageneration.data.IBuilder;
 import me.wanderingsoul.fabricdatageneration.data.ISerializable;
+import me.wanderingsoul.fabricdatageneration.data.json.JsonArray;
+import me.wanderingsoul.fabricdatageneration.data.json.JsonObject;
+import me.wanderingsoul.fabricdatageneration.data.json.JsonProperty;
+import me.wanderingsoul.fabricdatageneration.data.json.NamelessJsonProperty;
 import net.minecraft.item.Item;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
@@ -24,25 +28,22 @@ public class ShapedRecipeSerializable implements ISerializable {
 
     @Override
     public String serialize() {
-        StringBuilder builder = new StringBuilder();
+        JsonObject obj = new JsonObject();
 
-        builder.append("{\n\t \"type\":\"minecraft:crafting_shaped\",\n\t\"pattern\": [\n\t\t")
-                .append("\"").append(pattern[0]).append("\",\n\t\t")
-                .append("\"").append(pattern[1]).append("\",\n\t\t")
-                .append("\"").append(pattern[2]).append("\"\n\t],\n\t");
+        obj.addProperty(new JsonProperty.StringProperty("type", "minecraft:crafting_shaped"));
+        obj.addProperty(new JsonProperty.ArrayProperty("pattern", new JsonArray().addProperties(new NamelessJsonProperty.StringProperty(pattern[0]), new NamelessJsonProperty.StringProperty(pattern[1]), new NamelessJsonProperty.StringProperty(pattern[2]))));
 
-        builder.append("\"key\": {\n\t\t");
+        JsonObject jsonKey = new JsonObject();
         keys.forEach(key -> {
-            builder.append("\"").append(key.getLeft()).append("\": {\n\t\t\t");
-            if (key.getRight().getLeft() == IngredientType.ITEM) builder.append("\"item\": \"").append(key.getRight().getRight().toString()).append("\"\n\t\t}\n\t},\n\t\t");
-            else builder.append("\"tag\": \"").append(key.getRight().getRight().toString()).append("\"\n\t},\n\t\t");
+            if (key.getRight().getLeft().equals(IngredientType.ITEM))
+                jsonKey.addProperty(new JsonProperty.ObjectProperty(key.getLeft().toString(), new JsonObject().addProperty(new JsonProperty.StringProperty("item", key.getRight().getRight().toString()))));
+            else
+                jsonKey.addProperty(new JsonProperty.ObjectProperty(key.getLeft().toString(), new JsonObject().addProperty(new JsonProperty.StringProperty("tag", key.getRight().getRight().toString()))));
         });
 
-        builder.setLength(builder.length()-7);
+        obj.addProperty(new JsonProperty.ObjectProperty("key", jsonKey));
 
-        builder.append("\n\t},\n\t\"result\": {\n\t\t\"item\": \"").append(result.toString()).append("\",\n\t\t").append("\"count\": ").append(count).append("\n\t}\n}");
-
-        return builder.toString();
+        return obj.serialize();
     }
 
     public String[] getPattern() {

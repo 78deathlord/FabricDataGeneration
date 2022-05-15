@@ -3,6 +3,8 @@ package me.wanderingsoul.fabricdatageneration.data.common;
 import me.wanderingsoul.fabricdatageneration.EnvVariables;
 import me.wanderingsoul.fabricdatageneration.data.IBuilder;
 import me.wanderingsoul.fabricdatageneration.data.ISerializable;
+import me.wanderingsoul.fabricdatageneration.data.json.JsonObject;
+import me.wanderingsoul.fabricdatageneration.data.json.JsonProperty;
 import net.minecraft.item.Item;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
@@ -20,35 +22,23 @@ public class SmithingRecipeSerializable implements ISerializable {
 
     @Override
     public String serialize() {
-        String str =
-                """
-                {
-                    "type": "minecraft:smithing",
-                    "base": {
-                        "%1$s": "%2$s"
-                    },
-                    "addition": {
-                        "%3$s": "%4$s"
-                    },
-                    "result": {
-                        "item": "%5$s"
-                    }
-                }
-                """;
+        JsonObject obj = new JsonObject();
 
-        if (base.getLeft() == IngredientType.ITEM) {
-            if (addition.getLeft() == IngredientType.ITEM) {
-                return String.format(str, IngredientType.ITEM, base.getRight().toString(), IngredientType.ITEM, addition.getRight().toString(), result.toString());
-            } else {
-                return String.format(str, IngredientType.ITEM, base.getRight().toString(), IngredientType.TAG, addition.getRight().toString(), result.toString());
-            }
-        } else  {
-            if (addition.getLeft() == IngredientType.ITEM) {
-                return String.format(str, IngredientType.TAG, base.getRight().toString(), IngredientType.ITEM, addition.getRight().toString(), result.toString());
-            } else {
-                return String.format(str, IngredientType.TAG, base.getRight().toString(), IngredientType.TAG, addition.getRight().toString(), result.toString());
-            }
-        }
+        obj.addProperty(new JsonProperty.StringProperty("type", "minecraft:smithing"));
+
+        if (base.getLeft().equals(IngredientType.ITEM))
+            obj.addProperty(new JsonProperty.ObjectProperty("base", new JsonObject().addProperty(new JsonProperty.StringProperty("item", base.getRight().toString()))));
+        else
+            obj.addProperty(new JsonProperty.ObjectProperty("base", new JsonObject().addProperty(new JsonProperty.StringProperty("tag", base.getRight().toString()))));
+
+        if (addition.getLeft().equals(IngredientType.ITEM))
+            obj.addProperty(new JsonProperty.ObjectProperty("addition", new JsonObject().addProperty(new JsonProperty.StringProperty("item", addition.getRight().toString()))));
+        else
+            obj.addProperty(new JsonProperty.ObjectProperty("addition", new JsonObject().addProperty(new JsonProperty.StringProperty("tag", addition.getRight().toString()))));
+
+        obj.addProperty(new JsonProperty.ObjectProperty("result", new JsonObject().addProperty(new JsonProperty.StringProperty("item", result.toString()))));
+
+        return obj.toString();
     }
 
     public static class Builder implements IBuilder<SmithingRecipeSerializable> {

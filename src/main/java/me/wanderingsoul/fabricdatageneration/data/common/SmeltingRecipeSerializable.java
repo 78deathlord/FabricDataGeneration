@@ -3,6 +3,8 @@ package me.wanderingsoul.fabricdatageneration.data.common;
 import me.wanderingsoul.fabricdatageneration.EnvVariables;
 import me.wanderingsoul.fabricdatageneration.data.IBuilder;
 import me.wanderingsoul.fabricdatageneration.data.ISerializable;
+import me.wanderingsoul.fabricdatageneration.data.json.JsonObject;
+import me.wanderingsoul.fabricdatageneration.data.json.JsonProperty;
 import net.minecraft.item.Item;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
@@ -22,16 +24,19 @@ public class SmeltingRecipeSerializable implements ISerializable {
 
     @Override
     public String serialize() {
-        StringBuilder builder = new StringBuilder();
+        JsonObject obj = new JsonObject();
+        obj.addProperty(new JsonProperty.StringProperty("type", recipeType.toString()));
 
-        builder.append("{\n\t\"type\": ").append(recipeType.toString()).append(",\n\t");
-        if (ingredient.getLeft() == IngredientType.ITEM) builder.append("\"ingredient\": {\n\t\t\"item\": \"").append(ingredient.getRight().toString()).append("\"\n\t},\n\t");;
-        if (ingredient.getLeft() == IngredientType.TAG) builder.append("\"ingredient\": {\n\t\t\"tag\": \"").append(ingredient.getRight().toString()).append("\"\n\t},\n\t");
-        builder.append("\"result\": \"").append(result.toString()).append("\",\n\t");
-        builder.append("\"experience\": ").append(xp).append(",\n\t");
-        builder.append("\"cookingtime\": ").append(cookingTime).append("\n}");
+        if (ingredient.getLeft().equals(IngredientType.ITEM))
+            obj.addProperty(new JsonProperty.ObjectProperty("ingredient", new JsonObject().addProperty(new JsonProperty.StringProperty("item", ingredient.getRight().toString()))));
+        else
+            obj.addProperty(new JsonProperty.ObjectProperty("ingredient", new JsonObject().addProperty(new JsonProperty.StringProperty("tag", ingredient.getRight().toString()))));
 
-        return builder.toString();
+        obj.addProperty(new JsonProperty.StringProperty("result", result.toString()));
+        obj.addProperty(new JsonProperty.FloatProperty("experience", xp));
+        obj.addProperty(new JsonProperty.IntProperty("cookingtime", cookingTime));
+
+        return obj.serialize();
     }
 
     public Pair<IngredientType, Identifier> getIngredient() {
@@ -55,9 +60,9 @@ public class SmeltingRecipeSerializable implements ISerializable {
 
         @Override
         public String toString() {
-            if (this == SMOKING) return "\"minecraft:smoking\"";
-            if (this == BLASTING) return "\"minecraft:blasting\"";
-            if (this == SMELTING) return "\"minecraft:smelting\"";
+            if (this == SMOKING) return "minecraft:smoking";
+            if (this == BLASTING) return "minecraft:blasting";
+            if (this == SMELTING) return "minecraft:smelting";
 
             return super.toString();
         }

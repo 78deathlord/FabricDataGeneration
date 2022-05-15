@@ -3,6 +3,8 @@ package me.wanderingsoul.fabricdatageneration.data.common;
 import me.wanderingsoul.fabricdatageneration.EnvVariables;
 import me.wanderingsoul.fabricdatageneration.data.IBuilder;
 import me.wanderingsoul.fabricdatageneration.data.ISerializable;
+import me.wanderingsoul.fabricdatageneration.data.json.JsonObject;
+import me.wanderingsoul.fabricdatageneration.data.json.JsonProperty;
 import net.minecraft.item.Item;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
@@ -16,27 +18,23 @@ import java.io.IOException;
 public class StonecuttingRecipeSerializable implements ISerializable {
     private Pair<IngredientType, Identifier> ingredient;
     private Identifier result;
-    private int count;
+    private int count = 1;
 
     @Override
     public String serialize() {
-        String str =
-                """
-                {
-                    "type": "minecraft:stonecutting",
-                    "ingredient": {
-                        "%1$s": "%2$s"
-                    },
-                    "result": %3$s,
-                    "count" %4$s
-                }
-                """;
+        JsonObject obj = new JsonObject();
 
-        if (ingredient.getLeft().equals(IngredientType.ITEM)) {
-            return String.format(str, IngredientType.ITEM, ingredient.getRight().toString(), result.toString(), count);
-        } else {
-            return String.format(str, IngredientType.TAG, ingredient.getRight().toString(), result.toString(), count);
-        }
+        obj.addProperty(new JsonProperty.StringProperty("type", "minecraft:stonecutting"));
+
+        if (ingredient.getLeft().equals(IngredientType.ITEM))
+            obj.addProperty(new JsonProperty.ObjectProperty("ingredient", new JsonObject().addProperty(new JsonProperty.StringProperty("item", ingredient.getRight().toString()))));
+        else
+            obj.addProperty(new JsonProperty.ObjectProperty("ingredient", new JsonObject().addProperty(new JsonProperty.StringProperty("tag", ingredient.getRight().toString()))));
+
+        obj.addProperty(new JsonProperty.StringProperty("result", result.toString()));
+        obj.addProperty(new JsonProperty.IntProperty("count", count));
+
+        return obj.serialize();
     }
 
     public static class Builder implements IBuilder<StonecuttingRecipeSerializable> {
@@ -73,6 +71,12 @@ public class StonecuttingRecipeSerializable implements ISerializable {
 
         public Builder result(Identifier result) {
             serializable.result = result;
+
+            return this;
+        }
+
+        public Builder count(int count) {
+            serializable.count = count;
 
             return this;
         }

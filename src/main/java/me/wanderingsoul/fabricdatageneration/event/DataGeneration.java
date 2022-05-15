@@ -8,9 +8,7 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.util.ActionResult;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 import java.util.Scanner;
 
@@ -38,43 +36,61 @@ public interface DataGeneration {
             }
         } else if (cacheFile.exists()){
             try {
-                Scanner cacheReader = new Scanner(cacheFile);
-                while (cacheReader.hasNextLine()) {
-                    File generatedDataFile = new File(cacheReader.next());
-                    generatedDataFile.delete();
+                String cache = readFromInputStream(new FileInputStream(cacheFile));
 
-                    FabricDataGeneration.LOGGER.info("deleted old data file: "+generatedDataFile);
+                String[] files = cache.split(";");
+
+                for (int i = 0; i <= files.length-2; i++) {
+
+
+                    File f = new File(files[i]);
+
+                    f.delete();
+
+                    FabricDataGeneration.LOGGER.info("Deleted data file: "+f);
                 }
+
+                cacheFile.delete();
+                cacheFile.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
+        StringBuilder str = new StringBuilder();
+
         builders.forEach((builder -> {
             if (EnvVariables.isModEnabled(builder.getId().getNamespace())) {
                 builder.save();
+                FabricDataGeneration.LOGGER.info("Generated data file: "+builder.getSavePath());
 
-                try {
-                    FileWriter cacheWriter = new FileWriter(cacheFile);
-
-                    cacheWriter.write("");
-                    cacheWriter.flush();
-
-                    if (builders.indexOf(builder) == builders.size()-1) {
-                        cacheWriter.append(builder.getSavePath());
-                    } else {
-                        cacheWriter.append(builder.getSavePath()).append("\n");
-                    }
-
-                    cacheWriter.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                str.append(builder.getSavePath()).append(";");
             }
         }));
 
+        try {
+            FileWriter cacheWriter = new FileWriter(cacheFile);
+            cacheWriter.write(str.toString());
+            cacheWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         throw new DataGenerationFinishedException();
     });
+
+    private static String readFromInputStream(InputStream inputStream) {
+        StringBuilder resultStringBuilder = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                resultStringBuilder.append(line).append("\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return resultStringBuilder.toString();
+    }
 
     ActionResult interact(List<IBuilder> builders);
 }
