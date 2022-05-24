@@ -1,8 +1,9 @@
 package me.wanderingsoul.fabricdatageneration.data.json;
 
-public interface JsonProperty {
+import me.wanderingsoul.fabricdatageneration.data.ISerializable;
+
+public interface JsonProperty extends ISerializable {
     String getName();
-    String serialize();
 
     class IntProperty implements JsonProperty {
         private final String name;
@@ -43,6 +44,7 @@ public interface JsonProperty {
         }
 
         @Override
+
         public String serialize() {
             return "\""+name+"\":"+value;
         }

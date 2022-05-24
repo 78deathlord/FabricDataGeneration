@@ -2,6 +2,7 @@ package me.wanderingsoul.fabricdatageneration.data.common;
 
 import me.wanderingsoul.fabricdatageneration.EnvVariables;
 import me.wanderingsoul.fabricdatageneration.data.IBuilder;
+import me.wanderingsoul.fabricdatageneration.data.IDataGenerator;
 import me.wanderingsoul.fabricdatageneration.data.ISerializable;
 import me.wanderingsoul.fabricdatageneration.data.json.JsonObject;
 import me.wanderingsoul.fabricdatageneration.data.json.JsonProperty;
@@ -71,9 +72,11 @@ public class SmeltingRecipeSerializable implements ISerializable {
     public static class Builder implements IBuilder<SmeltingRecipeSerializable> {
         private final SmeltingRecipeSerializable serializable = new SmeltingRecipeSerializable();
         private final Identifier id;
+        private final IDataGenerator generator;
 
-        public Builder(Identifier id) {
+        public Builder(Identifier id, IDataGenerator generator) {
             this.id = id;
+            this.generator = generator;
         }
 
         public Builder recipeType(RecipeType recipeType) {
@@ -127,7 +130,7 @@ public class SmeltingRecipeSerializable implements ISerializable {
         @Override
         public void save() {
             try {
-                String path = EnvVariables.RESOURCE_PATH+"/data/"+getId().getNamespace()+"/recipes/";
+                String path = generator.getResourceDirectory()+"/data/"+getId().getNamespace()+"/recipes/";
                 File pathFile = new File(path);
                 pathFile.mkdirs();
                 File json = new File(path+getId().getPath()+".json");
@@ -146,7 +149,7 @@ public class SmeltingRecipeSerializable implements ISerializable {
 
         @Override
         public String getSavePath() {
-            String path = EnvVariables.RESOURCE_PATH+"/data/"+getId().getNamespace()+"/recipes/";
+            String path = generator.getResourceDirectory()+"/data/"+getId().getNamespace()+"/recipes/";
             return path+getId().getPath()+".json";
         }
 
