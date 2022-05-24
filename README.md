@@ -64,7 +64,7 @@ public static class MyDataGenerator implements IDataGenerator {
 }
 ```
 
-##Registering Your Data Generator Method #1
+## Registering Your Data Generator Method #1
 ```java
 public class MyMod implements ModInitializer {
     @Override
@@ -75,7 +75,7 @@ public class MyMod implements ModInitializer {
 }
 ```
 
-##Registering Your Data Generator Method #2
+## Registering Your Data Generator Method #2
 ```java
 public class MyMod implements ModInitializer {
     @Override
