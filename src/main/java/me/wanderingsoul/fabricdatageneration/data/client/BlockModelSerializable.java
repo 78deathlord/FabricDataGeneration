@@ -21,14 +21,14 @@ import java.util.List;
 
 public class BlockModelSerializable implements ISerializable {
     private Identifier parent;
-    private final JsonObject textures = new JsonObject();
+    private JsonObject textures;
     private List<ModelElement> elements;
 
     @Override
     public String serialize() {
         JsonObject obj = new JsonObject();
         if (parent != null) obj.addProperty(new JsonProperty.StringProperty("parent", parent.toString()));
-        obj.addProperty(new JsonProperty.ObjectProperty("textures", textures));
+        if (textures != null) obj.addProperty(new JsonProperty.ObjectProperty("textures", textures));
 
         if (elements != null) {
             JsonArray elementsArr = new JsonArray();
@@ -434,6 +434,8 @@ public class BlockModelSerializable implements ISerializable {
         }
 
         public Builder texture(Texture texture) {
+            if (serializable.textures == null) serializable.textures = new JsonObject();
+
             serializable.textures.addProperty(new JsonProperty.StringProperty(texture.name(), texture.id().toString()));
 
             return this;
