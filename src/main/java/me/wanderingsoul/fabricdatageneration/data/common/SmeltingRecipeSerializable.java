@@ -1,6 +1,7 @@
 package me.wanderingsoul.fabricdatageneration.data.common;
 
 import me.wanderingsoul.fabricdatageneration.EnvVariables;
+import me.wanderingsoul.fabricdatageneration.data.FileUtil;
 import me.wanderingsoul.fabricdatageneration.data.IBuilder;
 import me.wanderingsoul.fabricdatageneration.data.IDataGenerator;
 import me.wanderingsoul.fabricdatageneration.data.ISerializable;
@@ -129,22 +130,7 @@ public class SmeltingRecipeSerializable implements ISerializable {
 
         @Override
         public void save() {
-            try {
-                String path = generator.getResourceDirectory()+"/data/"+getId().getNamespace()+"/recipes/";
-                File pathFile = new File(path);
-                pathFile.mkdirs();
-                File json = new File(path+getId().getPath()+".json");
-
-                if (!json.exists()) json.createNewFile();
-
-                FileWriter writer = new FileWriter(json);
-
-                writer.write(serializable.serialize());
-
-                writer.close();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
+            FileUtil.saveDataToFile(getSavePath(), getId(), serializable.serialize());
         }
 
         @Override

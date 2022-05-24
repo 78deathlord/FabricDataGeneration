@@ -1,9 +1,6 @@
 package me.wanderingsoul.fabricdatageneration.data.client;
 
-import me.wanderingsoul.fabricdatageneration.data.IBuilder;
-import me.wanderingsoul.fabricdatageneration.data.IDataGenerator;
-import me.wanderingsoul.fabricdatageneration.data.ISerializable;
-import me.wanderingsoul.fabricdatageneration.data.Texture;
+import me.wanderingsoul.fabricdatageneration.data.*;
 import me.wanderingsoul.fabricdatageneration.data.client.model.*;
 import me.wanderingsoul.fabricdatageneration.data.json.JsonArray;
 import me.wanderingsoul.fabricdatageneration.data.json.JsonObject;
@@ -451,18 +448,7 @@ public class BlockModelSerializable implements ISerializable {
 
         @Override
         public void save() {
-            try {
-                File dir = new File(getSavePath().replace("/"+id.getPath()+".json", ""));
-                dir.mkdirs();
-                File json = new File(getSavePath());
-                json.createNewFile();
-
-                FileWriter writer = new FileWriter(json);
-                writer.write(serializable.serialize());
-                writer.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            FileUtil.saveDataToFile(getSavePath(), getId(), serializable.serialize());
         }
 
         @Override
