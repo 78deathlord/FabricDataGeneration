@@ -14,7 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class OriginsLayerCustomDataExample implements ISerializable {
-    //optionally crete getters for these
+    //optionally create getters for these
     private boolean replace = false;
     private /* lists can be final */ final List<Identifier> origins = new LinkedList<>();
     private int order = 25;
