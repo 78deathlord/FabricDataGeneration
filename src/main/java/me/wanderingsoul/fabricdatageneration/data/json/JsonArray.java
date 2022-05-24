@@ -19,7 +19,7 @@ public class JsonArray implements ISerializable {
             builder.append(property.serialize()).append(",");
         });
 
-        builder.setLength(builder.length()-3);
+        if (properties.size() >= 1) builder.setLength(builder.length()-1);
 
         builder.append("]");
 
