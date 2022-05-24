@@ -89,7 +89,7 @@ public class MyMod implements ModInitializer {
 ## Generating Data
 Data generation is done using fabric registries simply call FabricDataGeneration#registerGenerator to register your data generator (or simply register using Registry#register).
 
-***Before generating data make sure to set the "generateData" environment variable to true otherwise your data will not be generated***
+***Before generating data make sure to set the "generateData" environment variable to true otherwise your data will not be generated***<br><br>
 ***It is also important to set the "enabledMods" environment variable, it takes the form of a string array***
 <br><br><br>
 ***Examples:***<br>
